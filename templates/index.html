@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bond Data Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UK Gilt Bond Data</h1>
+            <div class="controls">
+                <label for="dateSelect">Select Date:</label>
+                <select id="dateSelect" onchange="loadBonds()">
+                    {% for date in available_dates %}
+                    <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>
+                        {{ date }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </header>
+
+        <div class="yield-curve-section">
+            <h2>Yield Curve</h2>
+            <div class="chart-container">
+                <canvas id="yieldCurveChart"></canvas>
+            </div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">Loading...</div>
+
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <div class="tabs">
+                    <button class="tab-button active" onclick="showTab('Bills')">Bills</button>
+                    <button class="tab-button" onclick="showTab('Conventional')">Bond</button>
+                    <button class="tab-button" onclick="showTab('Index-linked')">Index-linked</button>
+                    <button class="tab-button" onclick="showTab('Strips')">Strips</button>
+                </div>
+                <span id="bondCount" class="bond-count"></span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="bondsTable" class="sortable-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)" class="sortable">
+                            ISIN <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(1)" class="sortable">
+                            Gilt Name <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(2)" class="sortable">
+                            Coupon <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(3)" class="sortable">
+                            Maturity <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(4)" class="sortable">
+                            Clean Price <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(5)" class="sortable">
+                            Dirty Price <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(6)" class="sortable">
+                            Yield <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(7)" class="sortable">
+                            Mod Duration <span class="sort-arrow">↕</span>
+                        </th>
+                        <th onclick="sortTable(8)" class="sortable">
+                            Accrued Interest <span class="sort-arrow">↕</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="bondsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBonds();
+        });
+    </script>
+</body>
+</html>

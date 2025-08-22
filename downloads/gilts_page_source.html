@@ -1,0 +1,876 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" class="t-chrome t-chrome120" style="display: block; visibility: visible;"><head><meta http-equiv="X-UA-Compatible" content="IE=EDGE,Chrome=IE8"><link rel="shortcut icon" href="/favicon.ico"><title>
+	Tradeweb FTSE Gilt Closing Prices :: Tradeweb Market InSite
+</title><link href="../../css/alerts.css" rel="stylesheet" type="text/css">
+    
+    
+    
+    <style type="text/css">
+        html{ display : none ; visibility : hidden ; }
+    </style>
+    <script type="text/javascript" async="" src="https://ssl.google-analytics.com/ga.js"></script><script type="text/javascript">
+        if (self == top) { document.documentElement.style.display = 'block'; document.documentElement.style.visibility = 'visible'; } else { top.location = self.location; }
+    </script>
+
+
+	
+    
+    <style type="text/css">
+    .price_info
+    {
+	    padding: 20px 10px !important;
+	    line-height: 16px;
+    }
+
+    .price_info strong,
+    .price_info img
+    {
+	    vertical-align: middle;
+    }
+    
+    .filter-buttons strong
+    {
+        float: left;
+        font-size: 0.9em;
+        margin-left: 90px;
+        display: block;
+        width: 800px;
+        text-align: left;
+    }
+
+    .panel-grid p
+    {
+        margin-top: 20px;
+    }
+    </style>
+
+    
+        <script type="text/javascript">
+            function SubmitButton_ClientClick() {
+                trackEvent("Searched");
+                return true;
+            }
+
+            function ExportButton_ClientClick() {
+                radconfirm('Please note your use of the data on this website is subject to the <a href="https://reports.tradeweb.com/terms/" target="_blank">Terms of Use</a> which require any use of the Gilts Reference Prices to be for non-professional and non-commercial use.<br /><br />Please click OK to confirm that you have read and understand these <a href="https://reports.tradeweb.com/terms/" target="_blank">Terms of Use</a> and that your use of this data will be consistent with them.  If you require to use the Gilts Reference Prices for commercial or professional use please <a href="https://www.tradeweb.com/who-we-are/contact-us/?fn=Giuseppe&ln=Pes&em=giuse88%40gmail.com&pn=07578073300&co=None&ct=United+Kingdom&chk=Market+Data" target="_blank">contact us</a>.', ExportButton_Ok, 600, 200, null, 'Gilt Prices Export');
+            }
+
+            function ExportButton_Ok(arg) {
+                if (arg) {
+                    trackEvent("Exported");
+                    __doPostBack('ctl00$ctl00$MainContent$MainContent$ExportButton', '')
+                }
+            }
+
+            function trackEvent(eventName) {
+                try {
+                    _gaq.push(['_trackEvent', 'Gilt Close Prices', eventName]);
+                } catch (e) {
+                    // Normally if Google Analytics does not load, _gaq should be [],
+                    // but something at a client site is causing this code not to load
+                    // thus as a belt & braces approach we'll wrap an empty try catch
+                    // to suppress any errors for such clients.
+                }
+            }
+
+            function requestStart(ajaxManager, eventArgs) {
+                if (eventArgs.get_eventTarget().indexOf("ctl00$ctl00$MainContent$MainContent$ExportButton") != -1) {
+                    eventArgs.set_enableAjax(false);
+                }
+            }
+            function SecurityTypesListChange() {
+                setDefaults('#MainContent_MainContent_CPTypeList ', 'all');
+            }
+            function SymbolTextBoxBlur() {
+                setDefaults('#MainContent_MainContent_CPTypeList', 'all');
+            }
+            function CPTypeListChange() {
+                setDefaults('#MainContent_MainContent_SymbolTextBox ', '');
+                setDefaults('#MainContent_MainContent_SecurityTypesList ', 'all');
+            }
+            function setDefaults(id, setVal) {
+                if ($(id).text != setVal)
+                {
+                    $(id).val(setVal);
+                }
+            }
+        </script>
+    
+
+    <script type="text/javascript">
+        function NextAlert() {
+            nextAlertFunc('ctl00_ctl00_MainContent_RadWindow_Alerts_C_alertRadTabStrip');
+        }
+
+        function PrevAlert() {
+            prevAlertFunc('ctl00_ctl00_MainContent_RadWindow_Alerts_C_alertRadTabStrip');
+        }
+
+        function pageLoad() {
+            //start on page load           
+            var tabstrip = $find('ctl00_ctl00_MainContent_RadWindow_Alerts_C_alertRadTabStrip');
+            if (tabstrip != null && tabstrip.get_selectedIndex() != -1) {
+                $("#MainContent_hiddenAlertId").val(tabstrip._tabData[0].attributes.AlertId);
+            }
+            else {
+                CloseAlertWindow();
+            }
+        }
+
+        function CloseAlertWindow(sender, args) {
+            var oWnd = $find("ctl00_ctl00_MainContent_RadWindow_Alerts");
+            if (oWnd != null)
+                oWnd.close();
+        }
+
+        //Start - Code to auto rotate rad tab strip
+        function prevAlertFunc(autorotateid) {
+            var tabstrip = $find(autorotateid);
+            var prevIndex = tabstrip.get_selectedIndex() - 1;
+            if (prevIndex < 0) prevIndex = tabstrip.get_tabs().get_count() - 1;
+            tabstrip.set_selectedIndex(prevIndex);
+            automaticAdvance = false;
+        }
+
+        function nextAlertFunc(autorotateid) {
+            var tabstrip = $find(autorotateid);
+            var nextIndex = (tabstrip.get_selectedIndex() + 1)
+            if (nextIndex >= tabstrip.get_tabs().get_count()) nextIndex = 0;
+            tabstrip.set_selectedIndex(nextIndex);
+        }
+
+        function OnAlertClientTabSelected(sender, eventArgs) {
+            var tab = eventArgs.get_tab();
+            SetAcceptButtonText(tab);
+        }
+
+        function SetAcceptButtonText(tab) {
+            var attributes = tab.get_attributes();
+            var btnText = attributes.getAttribute("AcceptButtonText");
+            var alertId = attributes.getAttribute("AlertId");
+            $("#ctl00_ctl00_MainContent_RadWindow_Alerts_C_btnAccept").val(btnText);
+            $("#MainContent_hiddenAlertId").val(alertId);
+        }
+
+        function OnAlertClientTabSelecting(sender, args) {
+            var id = args.get_tab().get_pageView().get_id();
+            if (sender.get_selectedTab()) {
+                var oldID = sender.get_selectedTab().get_pageView().get_id();
+                if ($telerik.$("#" + oldID).is(":visible")) {
+                    args.set_cancel(true);
+                    $telerik.$("#" + oldID).fadeOut(500, function () { args.get_tab().select(); });
+                    return;
+                }
+            }
+
+            $telerik.$("#" + id).fadeOut(500);
+            $telerik.$("#" + id).fadeIn(500);
+        }
+      
+
+    </script>
+<meta name="application-version" content="0.0.0.0"><link href="/Telerik.Web.UI.WebResource.axd?d=9i92g_lIqcTCzAslR6yc75-EI1cWBqFs_ofs1aRoiQqYYo8K5r3aZTueAKN-dBcF5HEKNlB71w01Q-sh17slfDfTMf2-mJIZiF9CAeYljfipGPQ-J_Z6bkf2O8DgncQuJ0-bDQ2&amp;t=637560152191888014&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3b%7c638906633100000000%3aa74f6ffd%3a5f425349%3ad2842be%3bTelerik.Web.UI%2c+Version%3d2020.2.617.40%2c+Culture%3dneutral%2c+PublicKeyToken%3d121fae78165ba3d4%3aen%3a052f2b1c-05b8-458e-9272-a1efb1307104%3a5951aeec%3a2b415891%3aed2942d4%3ac5d7b491%3a92753c09%3a91f742eb%3a45085116%3a27c5704c%3aaac1aeb7%3ac73cf106%3ac86a4a06%3a4c651af2%3a9e1572d6%3ae25b4b77%3a1c2121e%3ae24b8e95" type="text/css" rel="stylesheet"></head>
+<body id="body">
+	<form method="post" action="/closing-prices/gilts/" id="ctl05">
+<div class="aspNetHidden">
+<input type="hidden" name="RadStylesheetManager1_TSSM" id="RadStylesheetManager1_TSSM" value=";|638906633100000000:a74f6ffd:5f425349:d2842be;Telerik.Web.UI, Version=2020.2.617.40, Culture=neutral, PublicKeyToken=121fae78165ba3d4:en:052f2b1c-05b8-458e-9272-a1efb1307104:5951aeec:2b415891:ed2942d4:c5d7b491:92753c09:91f742eb:45085116:27c5704c:aac1aeb7:c73cf106:c86a4a06:4c651af2:9e1572d6:e25b4b77:1c2121e:e24b8e95">
+<input type="hidden" name="RadScriptManager1_TSM" id="RadScriptManager1_TSM" value=";;System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35:en-US:f7ba41a4-e843-4f12-b442-8e407f37c316:ea597d4b:b25378d2;;Telerik.Web.UI:en-US:052f2b1c-05b8-458e-9272-a1efb1307104:16e4e7cd:f7645509:22a6274a;;Telerik.Web.UI, Version=2020.2.617.40, Culture=neutral, PublicKeyToken=121fae78165ba3d4:en-US:052f2b1c-05b8-458e-9272-a1efb1307104:33715776:24ee1bba:c128760b:1e771326:88144a7a:f46195d3:4cacbc31:2a8622d7:e330518b:2003d0b8:c8618e41:1a73651d:333f8d94:ed16cbdc:874f8ea2:b2e06756:92fe8ea0:fa31b949:4877f69a:19620875:490a9d4e:bd8f85e4:7c926187:8674cba1:b7778d6c:c08e9f8a:a51ee93e:59462f1:58366029:aa288e2d:258f1c72">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['ctl05'];
+if (!theForm) {
+    theForm = document.ctl05;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=0ryNW1aG35rz6V4fzHrn6KAUqqy0dLCHGVTP9uApch-1cx6sH6AfzZOLRme64VHEwAyDdVeC9Hmbyv_KVolqdX-31IQ1&amp;t=637460801481343508" type="text/javascript"></script>
+
+
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=RadScriptManager1_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bSystem.Web.Extensions%2c+Version%3d4.0.0.0%2c+Culture%3dneutral%2c+PublicKeyToken%3d31bf3856ad364e35%3aen%3af7ba41a4-e843-4f12-b442-8e407f37c316%3aea597d4b%3ab25378d2" type="text/javascript"></script>
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=RadScriptManager1_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bTelerik.Web.UI%3aen%3a052f2b1c-05b8-458e-9272-a1efb1307104%3a16e4e7cd%3af7645509%3a22a6274a" type="text/javascript"></script>
+<script src="/scripts/global.js" type="text/javascript"></script>
+<script src="/scripts/moment.js" type="text/javascript"></script>
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=RadScriptManager1_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bTelerik.Web.UI%2c+Version%3d2020.2.617.40%2c+Culture%3dneutral%2c+PublicKeyToken%3d121fae78165ba3d4%3aen%3a052f2b1c-05b8-458e-9272-a1efb1307104%3a33715776%3a24ee1bba%3ac128760b%3a1e771326%3a88144a7a%3af46195d3%3a4cacbc31%3a2a8622d7%3ae330518b%3a2003d0b8%3ac8618e41%3a1a73651d%3a333f8d94%3aed16cbdc%3a874f8ea2%3ab2e06756%3a92fe8ea0%3afa31b949%3a4877f69a%3a19620875%3a490a9d4e%3abd8f85e4%3a7c926187%3a8674cba1%3ab7778d6c%3ac08e9f8a%3aa51ee93e%3a59462f1%3a58366029%3aaa288e2d%3a258f1c72" type="text/javascript"></script>
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="48FE311E">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="xVU9dIir5F2cLIjWwlCVRAiP1mSm3ryhTXZ+u9d8Al8kYVZg2PBLNN3Z6LQhNW33MjJdEYIIGL/VuTUBRBSzOdeTLeqB4YMr3psT8M3Zng1DkALQT56HlwGYf9vOdGTW4G7s/BcEv+tN3iD88lTg7GFhuTz/wjPC+oJhq9E/99Yb6qAuzhtd963WKYkdv+A4zl/c46E0D0imp8hYYhXKBe0Zzpr4I0fC0tNtWwvKnbmBoWpT5SFjX/e419Dk9ZizGgFwIWl9djUHhLwAl9Ienapqjx1mQY74c2aOEMLTQRwARwrxO3IerAsxfUEje7a5k6lc+zUVtPOhxlkEH94NraOj2A3Y5hnyo4g6PInTgtB0UP1qS+RyGpBYFceaMiRbyUXmfRoLLRghjsHvh6p05DubA/ymYS+s0585E19CW6AXD4ybU4xwChdpd7DvZlGWQlzlGE2mHr1XWwx8wbpSCqn4zxdDAMbl7LSztbWL4W3uUs/1U9dAOCaLStqjy275/CBS3qJfqqxiGDfZ/pE2RqQEH1sDiI4bbGvz2S2Q3c0H52E5/pZBd5xHdUlnD9dHKnKvy60mZxJTGcszdzsMaGnbPTXAkejUTN0wo7etm65fQkKOBbZL4K1ew1QRSFVOY+CjjZQTGCb7kiY2Wm3A7xzWE20UPiXS1UQou/jEtSVXPTWkzfT36nCGjFi3HQHPV43LAN618wz6qoMSCXPuncki2W3Wr4y/NttPH5KdIVfyIVVexachEQXTuc91UhnKmOV09ALWWA7G1XhtEl2IUx+xPtBoFfpd0Q6VJb78YGX94611NY4MMrvBRy5kR4YGC/Nt9fvZT3FelqhV1JWxuJp/bx9VW7bxCjrNP/RUCHzogfPR7XBXi5QszFV+nhk+91BGmRaHdQfD91rqgP3dtyWJLRtTwYYsLzlxzKjvLOtfovGKklPjJaYJO0BUL+Hppmc0x8nsg7xewgJO6tVMHFnraWdnn3zJZMV0sebxi6OwgS0YmS+mkU7d5bHz9PAL1657YBHnFwTfkLuVp6R6X6/Riux89PqdAXdf+z1TSjfJqeuiw5Ob4ypC7xTqQkomz0qpVCcUhC49stijA/zALG2zU6XURDwG8fMA9HFEWmgzgp33dtW4WyAY5N9v6EkrJLAdpBP4bCJgS61dkuaRe50S1YLWA6JbnVvtXHS1rj3714IymAwcMU4lWe4k5YLlt3uEeCmJrKB/Ugy4kLqqA7UG+LZAN91u1szvvuEMMWEeI2gMLAxR/9xA3mz/BFLUDGl/igiQwjp9WdeD+XofWpLrmAo1InggXxK1BbBv8ARkz5sdrSUGbMdNGHLSdSRQWR6QXt5mPT9Km1m7ytVfDQL/HS14jF6zUbIbrHXEDkUCJGeexlQV6p2C59RWFTpD6RM6DZQMn6b3FZj5setJ+zIGdM4T5PHVsBS7KyCEzVJr7XIEuLGXN7kb4u+5vIWV+rdYgagsyDakeqpNAJFnQLLwvb3bujTjXEbidNERp9jkPDNSY0APwR7PQp6NDnG0g90/pw==">
+</div>
+		
+		<script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ctl00$RadScriptManager1', 'ctl05', ['tctl00$ctl00$MainContent$pnlAlert','MainContent_pnlAlert','tctl00$ctl00$MainContent$MainContent$ctl00$ctl00$MainContent$MainContent$ClosePricesGridPanel','','tctl00$ctl00$MainContent$MainContent$ctl00$ctl00$MainContent$MainContent$WarningPanelPanel','','tctl00$ctl00$MainContent$MainContent$ctl00$ctl00$MainContent$MainContent$HolidayWarningPanelPanel','','tctl00$ctl00$MainContent$MainContent$ctl00$ctl00$MainContent$MainContent$FilterPanelPanel','','tctl00$ctl00$MainContent$MainContent$RadAjaxManagerSU','MainContent_MainContent_RadAjaxManagerSU'], ['ctl00$ctl00$MainContent$MainContent$SubmitButton','MainContent_MainContent_SubmitButton','ctl00$ctl00$MainContent$MainContent$ClosePricesGrid',''], [], 90, 'ctl00$ctl00');
+//]]>
+</script>
+
+
+		<div id="container">
+			<div id="inside">
+
+				<div id="header">
+					<div id="logo-left"><a href="/"><img src="/images/logo-tradeweb.png" alt="[logo] Tradeweb Markets LLC"></a></div>
+                   
+                    
+                    
+					<div id="logo-right"><img src="/images/logo-insite-tagline.png" alt="[tagline] Enhanced Data &amp; Perspective" id="logo-tagline"><a href="/"><img src="/images/logo-insite.png" alt="[logo] InSite"></a></div>
+				</div>
+
+				<!-- MAIN CONTENT HERE -->
+				
+    <div id="left-col">
+        <div id="menu">
+            <div id="ctl00_ctl00_MainContent_RadPanelBar" class="RadPanelBar RadPanelBar_Default">
+	<!-- 2020.2.617.40 --><ul class="rpRootGroup">
+		<li class="rpItem rpFirst"><a href="https://reports.tradeweb.com/etp/" class="rpLink rpRootLink rpExpandable"><span class="rpOut rpNavigation"><span class="rpExpandHandle"></span><span class="rpText">ETP Reporting</span></span></a><div class="rpSlide">
+			<div class="rpTemplate">
+				<div tabindex="0" id="ctl00_ctl00_MainContent_RadPanelBar_i0_ctl00" class="RadMenu RadMenu_Default rmSized" style="width: 144px; z-index: 7000;">
+					<ul class="rmRootGroup rmVertical">
+						<li class="rmItem rmFirst rmLast"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/etp/trade-views/"><span class="rmText rmExpandRight">Trade Views</span></a><div class="rmSlide">
+							<ul class="rmVertical rmGroup rmLevel1">
+								<li class="rmItem rmFirst rmLast"><a class="rmLink" href="https://reports.tradeweb.com/etp/trade-views/yswp/"><span class="rmText">YSWP</span></a></li>
+							</ul>
+						</div></li>
+					</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_i0_ctl00_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_i0_ctl00_ClientState" type="hidden" autocomplete="off">
+				</div>
+			</div>
+		</div></li><li class="rpItem"><a href="https://reports-pri.tradeweb.com/#" class="rpLink rpRootLink rpExpandable"><span class="rpOut rpNavigation"><span class="rpExpandHandle"></span><span class="rpText">Product Pages</span></span></a><div class="rpSlide">
+			<div class="rpTemplate">
+				<div tabindex="0" id="ctl00_ctl00_MainContent_RadPanelBar_i1_ctl00" class="RadMenu RadMenu_Default rmSized" style="width: 144px; z-index: 7000;">
+					<ul class="rmRootGroup rmVertical">
+						<li class="rmItem rmFirst empty"><a class="rmLink rmRootLink" href="https://reports-pri.tradeweb.com/product-pages/repo/"><span class="rmText">REPO</span></a></li><li class="rmItem  empty"><a class="rmLink rmRootLink" href="https://reports-pri.tradeweb.com/product-pages/tca/"><span class="rmText">TCA</span></a></li><li class="rmItem rmLast empty"><a class="rmLink rmRootLink" href="https://reports-pri.tradeweb.com/product-pages/aiex/"><span class="rmText">AiEX</span></a></li>
+					</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_i1_ctl00_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_i1_ctl00_ClientState" type="hidden" autocomplete="off">
+				</div>
+			</div>
+		</div></li><li class="rpItem"><a href="https://reports.tradeweb.com/sef/" class="rpLink rpRootLink rpExpandable"><span class="rpOut rpNavigation"><span class="rpExpandHandle"></span><span class="rpText">SEF Activity</span></span></a><div class="rpSlide">
+			<div class="rpTemplate">
+				<div tabindex="0" id="ctl00_ctl00_MainContent_RadPanelBar_i2_ctl00" class="RadMenu RadMenu_Default rmSized" style="width: 144px; z-index: 7000;">
+					<ul class="rmRootGroup rmVertical">
+						<li class="rmItem rmFirst"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/sef/downloads/"><span class="rmText rmExpandRight">TW SEF</span></a><div class="rmSlide">
+							<ul class="rmVertical rmGroup rmLevel1">
+								<li class="rmItem rmFirst"><a class="rmLink" href="https://reports.tradeweb.com/download-asset/3/"><span class="rmText">CDS Volume</span></a></li><li class="rmItem rmLast"><a class="rmLink" href="https://reports.tradeweb.com/download-asset/4/"><span class="rmText">IRS Volume</span></a></li>
+							</ul>
+						</div></li><li class="rmItem "><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/sef/downloads/"><span class="rmText rmExpandRight">DW SEF</span></a><div class="rmSlide">
+							<ul class="rmVertical rmGroup rmLevel1">
+								<li class="rmItem rmFirst"><a class="rmLink" href="https://reports.tradeweb.com/download-asset/1/"><span class="rmText">CDS Volume</span></a></li><li class="rmItem "><a class="rmLink" href="https://reports.tradeweb.com/download-asset/2/"><span class="rmText">IRS Volume</span></a></li><li class="rmItem rmLast"><a class="rmLink" href="https://reports.tradeweb.com/download-asset/134002/"><span class="rmText">EQD Volume</span></a></li>
+							</ul>
+						</div></li><li class="rmItem rmLast empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/sef/sb-downloads/"><span class="rmText">SB SEF Activity</span></a></li>
+					</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_i2_ctl00_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_i2_ctl00_ClientState" type="hidden" autocomplete="off">
+				</div>
+			</div>
+		</div></li><li class="rpItem"><a href="https://reports.tradeweb.com/closing-prices/" class="rpLink rpRootLink rpExpandable rpExpanded"><span class="rpOut rpNavigation"><span class="rpExpandHandle"></span><span class="rpText">Closing Prices</span></span></a><div class="rpSlide" style="display:block;">
+			<div class="rpTemplate">
+				<div tabindex="0" id="ctl00_ctl00_MainContent_RadPanelBar_i3_ctl00" class="RadMenu RadMenu_Default rmSized" style="width: 144px; z-index: 7000;">
+					<ul class="rmRootGroup rmVertical">
+						<li class="rmItem rmFirst empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/closing-prices/gilts/"><span class="rmText">FTSE Closing Prices</span></a></li><li class="rmItem  empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/closing-prices/tradeweb-term-rfr/"><span class="rmText">Term RFR</span></a></li><li class="rmItem  empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/closing-prices/cmt-rates/"><span class="rmText">CMT Rates</span></a></li><li class="rmItem rmLast empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/closing-prices/muni-curve/"><span class="rmText">MUNI Rates</span></a></li>
+					</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_i3_ctl00_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_i3_ctl00_ClientState" type="hidden" autocomplete="off">
+				</div>
+			</div>
+		</div></li><li class="rpItem rpLast"><a href="https://reports-pri.tradeweb.com/market-stats/#" class="rpLink rpRootLink rpExpandable"><span class="rpOut rpNavigation"><span class="rpExpandHandle"></span><span class="rpText">Market Statistics</span></span></a><div class="rpSlide">
+			<div class="rpTemplate">
+				<div tabindex="0" id="ctl00_ctl00_MainContent_RadPanelBar_i4_ctl00" class="RadMenu RadMenu_Default rmSized" style="width: 144px; z-index: 7000;">
+					<ul class="rmRootGroup rmVertical">
+						<li class="rmItem rmFirst rmLast empty"><a class="rmLink rmRootLink" href="https://reports.tradeweb.com/twa/rate-sheets/"><span class="rmText">TWA Ratesheets</span></a></li>
+					</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_i4_ctl00_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_i4_ctl00_ClientState" type="hidden" autocomplete="off">
+				</div>
+			</div>
+		</div></li>
+	</ul><input id="ctl00_ctl00_MainContent_RadPanelBar_ClientState" name="ctl00_ctl00_MainContent_RadPanelBar_ClientState" type="hidden" autocomplete="off" value="{&quot;expandedItems&quot;:[&quot;3&quot;],&quot;logEntries&quot;:[],&quot;selectedItems&quot;:[]}">
+</div>
+        </div>
+        
+
+    </div>
+    <div id="main" class="clearfix">
+        <div id="right-col">
+            <input type="hidden" name="ctl00$ctl00$MainContent$hiddenAlertId" id="MainContent_hiddenAlertId">
+            
+	<div id="MainContent_MainContent_RadAjaxManagerSU" style="display: block;">
+	<span id="ctl00_ctl00_MainContent_MainContent_RadAjaxManager" style="display:none;"></span>
+</div>
+
+    <div id="ctl00_ctl00_MainContent_MainContent_ctl00" style="display:none;">
+	<div id="ctl00_ctl00_MainContent_MainContent_ctl00_alerttemplate" style="display:none;">
+		<div class="rwDialogPopup radalert">			
+			<div class="rwDialogText">
+			{1}				
+			</div>
+			
+			<div>
+				<a onclick="$find('{0}').close(true);" class="rwPopupButton" href="javascript:void(0);">
+					<span class="rwOuterSpan">
+						<span class="rwInnerSpan">##LOC[OK]##</span>
+					</span>
+				</a>				
+			</div>
+		</div>
+		</div><div id="ctl00_ctl00_MainContent_MainContent_ctl00_prompttemplate" style="display:none;">
+		 <div class="rwDialogPopup radprompt">			
+			    <div class="rwDialogText">
+			    {1}				
+			    </div>		
+			    <div>
+				    <script type="text/javascript">
+				    function RadWindowprompt_detectenter(id, ev, input)
+				    {							
+					    if (!ev) ev = window.event;                
+					    if (ev.keyCode == 13)
+					    {															        
+					        var but = input.parentNode.parentNode.getElementsByTagName("A")[0];					        
+					        if (but)
+						    {							
+							    if (but.click) but.click();
+							    else if (but.onclick)
+							    {
+							        but.focus(); var click = but.onclick; but.onclick = null; if (click) click.call(but);							 
+							    }
+						    }
+					       return false;
+					    } 
+					    else return true;
+				    }	 
+				    </script>
+				    <input title="Enter Value" onkeydown="return RadWindowprompt_detectenter('{0}', event, this);" type="text" class="rwDialogInput" value="{2}">
+			    </div>
+			    <div>
+				    <a onclick="$find('{0}').close(this.parentNode.parentNode.getElementsByTagName('input')[0].value);" class="rwPopupButton" href="javascript:void(0);"><span class="rwOuterSpan"><span class="rwInnerSpan">##LOC[OK]##</span></span></a>
+				    <a onclick="$find('{0}').close(null);" class="rwPopupButton" href="javascript:void(0);"><span class="rwOuterSpan"><span class="rwInnerSpan">##LOC[Cancel]##</span></span></a>
+			    </div>
+		    </div>				       
+		</div><div id="ctl00_ctl00_MainContent_MainContent_ctl00_confirmtemplate" style="display:none;">
+		<div class="rwDialogPopup radconfirm">			
+			<div class="rwDialogText">
+			{1}				
+			</div>						
+			<div>
+				<a onclick="$find('{0}').close(true);" class="rwPopupButton" href="javascript:void(0);"><span class="rwOuterSpan"><span class="rwInnerSpan">##LOC[OK]##</span></span></a>
+				<a onclick="$find('{0}').close(false);" class="rwPopupButton" href="javascript:void(0);"><span class="rwOuterSpan"><span class="rwInnerSpan">##LOC[Cancel]##</span></span></a>
+			</div>
+		</div>		
+		</div><input id="ctl00_ctl00_MainContent_MainContent_ctl00_ClientState" name="ctl00_ctl00_MainContent_MainContent_ctl00_ClientState" type="hidden">
+</div>
+
+	<div id="MainContent_MainContent_LoadingPanel" class="RadAjax RadAjax_Default" style="display:none;">
+	<div class="raDiv">
+
+	</div><div class="raColor raTransp">
+
+	</div>
+</div>
+
+	<h1>Tradeweb FTSE Gilt &amp; EuroGov Closing Prices</h1>
+
+    <div class="RadAjaxPanel" id="ctl00_ctl00_MainContent_MainContent_ctl00_ctl00_MainContent_MainContent_FilterPanelPanel" style="display: block;">
+	<div id="MainContent_MainContent_FilterPanel">
+		
+        <div class="panel-grey">
+            <div class="clearfix">
+                <div class="filter-set clearfix">
+                    <div class="filter">
+                        <label for="ctl00_ctl00_MainContent_MainContent_FromDatePicker" title="From date/time">From:</label>
+                        <div id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_wrapper" class="RadPicker RadPicker_Default" style="display:inline-block;width:110px;">
+			<input style="visibility:hidden;display:block;float:right;margin:0 0 -1px -1px;width:1px;height:1px;overflow:hidden;border:0;padding:0;" id="ctl00_ctl00_MainContent_MainContent_FromDatePicker" name="ctl00$ctl00$MainContent$MainContent$FromDatePicker" type="text" class="rdfd_ radPreventDecorate" value="2025-08-21" title="Visually hidden input created for functionality purposes."><table cellspacing="0" class="rcTable rcSingle" summary="Table holding date picker control for selection of dates." style="width:100%;">
+				<caption style="display:none;">
+					RadDatePicker
+				</caption><thead style="display:none;">
+					<tr>
+						<th scope="col">RadDatePicker</th>
+					</tr>
+				</thead><tbody>
+					<tr>
+						<td class="rcInputCell" style="width:100%;"><span id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput_wrapper" class="riSingle RadInput RadInput_Default" style="display:block;width:100%;"><input id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput" name="ctl00$ctl00$MainContent$MainContent$FromDatePicker$dateInput" class="riTextBox riEnabled" value="8/21/2025" type="text"><input id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput_ClientState" name="ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput_ClientState" type="hidden" autocomplete="off" value="{&quot;enabled&quot;:true,&quot;emptyMessage&quot;:&quot;&quot;,&quot;validationText&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;valueAsString&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;minDateStr&quot;:&quot;2017-07-24-00-00-00&quot;,&quot;maxDateStr&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;lastSetTextBoxValue&quot;:&quot;8/21/2025&quot;}"></span></td><td><a title="Open the calendar popup." href="#" id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_popupButton" class="rcCalPopup">Open the calendar popup.</a><div id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_wrapper" style="display:none;">
+							<table id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar" cellspacing="0" class="RadCalendar RadCalendar_Default">
+								<caption>
+									<span style="display:none;">Calendar</span>
+								</caption><thead>
+									<tr>
+										<td class="rcTitlebar"><table cellspacing="0">
+											<caption>
+												<span style="display:none;">Title and navigation</span>
+											</caption><thead>
+												<tr style="display:none;">
+													<th scope="col">Title and navigation</th>
+												</tr>
+											</thead><tbody>
+	<tr>
+		<td><a id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_FNP" class="t-button rcFastPrev" title="&lt;&lt;" href="../#">&lt;&lt;</a></td><td><a id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_NP" class="t-button rcPrev" title="&lt;" href="../#">&lt;</a></td><td id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Title" class="rcTitle">August 2025</td><td><a id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_NN" class="t-button rcNext" title="&gt;" href="../#">&gt;</a></td><td><a id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_FNN" class="t-button rcFastNext" title="&gt;&gt;" href="../#">&lt;&lt;</a></td>
+	</tr>
+</tbody>
+										</table></td>
+									</tr>
+								</thead><tbody>
+	<tr>
+		<td class="rcMain"><table id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top" class="rcMainTable" cellspacing="0">
+	<caption>
+		<span style="display:none;">August 2025</span>
+	</caption><thead>
+		<tr class="rcWeek">
+			<th class="rcViewSel" scope="col">&nbsp;</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_1" title="Sunday" scope="col">S</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_2" title="Monday" scope="col">M</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_3" title="Tuesday" scope="col">T</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_4" title="Wednesday" scope="col">W</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_5" title="Thursday" scope="col">T</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_6" title="Friday" scope="col">F</th><th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_cs_7" title="Saturday" scope="col">S</th>
+		</tr>
+	</thead><tbody>
+		<tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_1" scope="row">31</th><td class="rcOtherMonth" title="Sunday, July 27, 2025"><a href="#">27</a></td><td class="rcOtherMonth" title="Monday, July 28, 2025"><a href="#">28</a></td><td class="rcOtherMonth" title="Tuesday, July 29, 2025"><a href="#">29</a></td><td class="rcOtherMonth" title="Wednesday, July 30, 2025"><a href="#">30</a></td><td class="rcOtherMonth" title="Thursday, July 31, 2025"><a href="#">31</a></td><td title="Friday, August 01, 2025"><a href="#">1</a></td><td class="rcWeekend" title="Saturday, August 02, 2025"><a href="#">2</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_2" scope="row">32</th><td class="rcWeekend" title="Sunday, August 03, 2025"><a href="#">3</a></td><td title="Monday, August 04, 2025"><a href="#">4</a></td><td title="Tuesday, August 05, 2025"><a href="#">5</a></td><td title="Wednesday, August 06, 2025"><a href="#">6</a></td><td title="Thursday, August 07, 2025"><a href="#">7</a></td><td title="Friday, August 08, 2025"><a href="#">8</a></td><td class="rcWeekend" title="Saturday, August 09, 2025"><a href="#">9</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_3" scope="row">33</th><td class="rcWeekend" title="Sunday, August 10, 2025"><a href="#">10</a></td><td title="Monday, August 11, 2025"><a href="#">11</a></td><td title="Tuesday, August 12, 2025"><a href="#">12</a></td><td title="Wednesday, August 13, 2025"><a href="#">13</a></td><td title="Thursday, August 14, 2025"><a href="#">14</a></td><td title="Friday, August 15, 2025"><a href="#">15</a></td><td class="rcWeekend" title="Saturday, August 16, 2025"><a href="#">16</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_4" scope="row">34</th><td class="rcWeekend" title="Sunday, August 17, 2025"><a href="#">17</a></td><td title="Monday, August 18, 2025"><a href="#">18</a></td><td title="Tuesday, August 19, 2025"><a href="#">19</a></td><td title="Wednesday, August 20, 2025"><a href="#">20</a></td><td title="Thursday, August 21, 2025"><a href="#">21</a></td><td class="rcOutOfRange"><span>22</span></td><td class="rcOutOfRange"><span>23</span></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_5" scope="row">35</th><td class="rcOutOfRange"><span>24</span></td><td class="rcOutOfRange"><span>25</span></td><td class="rcOutOfRange"><span>26</span></td><td class="rcOutOfRange"><span>27</span></td><td class="rcOutOfRange"><span>28</span></td><td class="rcOutOfRange"><span>29</span></td><td class="rcOutOfRange"><span>30</span></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top_rs_6" scope="row">36</th><td class="rcOutOfRange"><span>31</span></td><td class="rcOutOfRange"><span>1</span></td><td class="rcOutOfRange"><span>2</span></td><td class="rcOutOfRange"><span>3</span></td><td class="rcOutOfRange"><span>4</span></td><td class="rcOutOfRange"><span>5</span></td><td class="rcOutOfRange"><span>6</span></td>
+		</tr>
+	</tbody>
+</table></td>
+	</tr>
+</tbody>
+							</table><input type="hidden" name="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_SD" id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_SD" value="[]"><input type="hidden" name="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_AD" id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_AD" value="[[2017,7,24],[2025,8,21],[2025,8,21]]">
+						</div></td>
+					</tr>
+				</tbody>
+			</table><input id="ctl00_ctl00_MainContent_MainContent_FromDatePicker_ClientState" name="ctl00_ctl00_MainContent_MainContent_FromDatePicker_ClientState" type="hidden" value="{&quot;minDateStr&quot;:&quot;2017-07-24-00-00-00&quot;,&quot;maxDateStr&quot;:&quot;2025-08-21-00-00-00&quot;}" autocomplete="off">
+		</div>
+                    </div>
+                    <div class="filter">
+                        <label for="ctl00_ctl00_MainContent_MainContent_ToDatePicker" title="To date/time" class="small">To:</label>
+                        <div id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_wrapper" class="RadPicker RadPicker_Default" style="display:inline-block;width:110px;">
+			<input style="visibility:hidden;display:block;float:right;margin:0 0 -1px -1px;width:1px;height:1px;overflow:hidden;border:0;padding:0;" id="ctl00_ctl00_MainContent_MainContent_ToDatePicker" name="ctl00$ctl00$MainContent$MainContent$ToDatePicker" type="text" class="rdfd_ radPreventDecorate" value="2025-08-21" title="Visually hidden input created for functionality purposes."><table cellspacing="0" class="rcTable rcSingle" summary="Table holding date picker control for selection of dates." style="width:100%;">
+				<caption style="display:none;">
+					RadDatePicker
+				</caption><thead style="display:none;">
+					<tr>
+						<th scope="col">RadDatePicker</th>
+					</tr>
+				</thead><tbody>
+					<tr>
+						<td class="rcInputCell" style="width:100%;"><span id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput_wrapper" class="riSingle RadInput RadInput_Default" style="display:block;width:100%;"><input id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput" name="ctl00$ctl00$MainContent$MainContent$ToDatePicker$dateInput" class="riTextBox riEnabled" value="8/21/2025" type="text"><input id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput_ClientState" name="ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput_ClientState" type="hidden" autocomplete="off" value="{&quot;enabled&quot;:true,&quot;emptyMessage&quot;:&quot;&quot;,&quot;validationText&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;valueAsString&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;minDateStr&quot;:&quot;2017-07-24-00-00-00&quot;,&quot;maxDateStr&quot;:&quot;2025-08-21-00-00-00&quot;,&quot;lastSetTextBoxValue&quot;:&quot;8/21/2025&quot;}"></span></td><td><a title="Open the calendar popup." href="#" id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_popupButton" class="rcCalPopup">Open the calendar popup.</a><div id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_wrapper" style="display:none;">
+							<table id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar" cellspacing="0" class="RadCalendar RadCalendar_Default">
+								<caption>
+									<span style="display:none;">Calendar</span>
+								</caption><thead>
+									<tr>
+										<td class="rcTitlebar"><table cellspacing="0">
+											<caption>
+												<span style="display:none;">Title and navigation</span>
+											</caption><thead>
+												<tr style="display:none;">
+													<th scope="col">Title and navigation</th>
+												</tr>
+											</thead><tbody>
+	<tr>
+		<td><a id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_FNP" class="t-button rcFastPrev" title="&lt;&lt;" href="../#">&lt;&lt;</a></td><td><a id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_NP" class="t-button rcPrev" title="&lt;" href="../#">&lt;</a></td><td id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Title" class="rcTitle">August 2025</td><td><a id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_NN" class="t-button rcNext" title="&gt;" href="../#">&gt;</a></td><td><a id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_FNN" class="t-button rcFastNext" title="&gt;&gt;" href="../#">&lt;&lt;</a></td>
+	</tr>
+</tbody>
+										</table></td>
+									</tr>
+								</thead><tbody>
+	<tr>
+		<td class="rcMain"><table id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top" class="rcMainTable" cellspacing="0">
+	<caption>
+		<span style="display:none;">August 2025</span>
+	</caption><thead>
+		<tr class="rcWeek">
+			<th class="rcViewSel" scope="col">&nbsp;</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_1" title="Sunday" scope="col">S</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_2" title="Monday" scope="col">M</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_3" title="Tuesday" scope="col">T</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_4" title="Wednesday" scope="col">W</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_5" title="Thursday" scope="col">T</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_6" title="Friday" scope="col">F</th><th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_cs_7" title="Saturday" scope="col">S</th>
+		</tr>
+	</thead><tbody>
+		<tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_1" scope="row">31</th><td class="rcOtherMonth" title="Sunday, July 27, 2025"><a href="#">27</a></td><td class="rcOtherMonth" title="Monday, July 28, 2025"><a href="#">28</a></td><td class="rcOtherMonth" title="Tuesday, July 29, 2025"><a href="#">29</a></td><td class="rcOtherMonth" title="Wednesday, July 30, 2025"><a href="#">30</a></td><td class="rcOtherMonth" title="Thursday, July 31, 2025"><a href="#">31</a></td><td title="Friday, August 01, 2025"><a href="#">1</a></td><td class="rcWeekend" title="Saturday, August 02, 2025"><a href="#">2</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_2" scope="row">32</th><td class="rcWeekend" title="Sunday, August 03, 2025"><a href="#">3</a></td><td title="Monday, August 04, 2025"><a href="#">4</a></td><td title="Tuesday, August 05, 2025"><a href="#">5</a></td><td title="Wednesday, August 06, 2025"><a href="#">6</a></td><td title="Thursday, August 07, 2025"><a href="#">7</a></td><td title="Friday, August 08, 2025"><a href="#">8</a></td><td class="rcWeekend" title="Saturday, August 09, 2025"><a href="#">9</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_3" scope="row">33</th><td class="rcWeekend" title="Sunday, August 10, 2025"><a href="#">10</a></td><td title="Monday, August 11, 2025"><a href="#">11</a></td><td title="Tuesday, August 12, 2025"><a href="#">12</a></td><td title="Wednesday, August 13, 2025"><a href="#">13</a></td><td title="Thursday, August 14, 2025"><a href="#">14</a></td><td title="Friday, August 15, 2025"><a href="#">15</a></td><td class="rcWeekend" title="Saturday, August 16, 2025"><a href="#">16</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_4" scope="row">34</th><td class="rcWeekend" title="Sunday, August 17, 2025"><a href="#">17</a></td><td title="Monday, August 18, 2025"><a href="#">18</a></td><td title="Tuesday, August 19, 2025"><a href="#">19</a></td><td title="Wednesday, August 20, 2025"><a href="#">20</a></td><td title="Thursday, August 21, 2025"><a href="#">21</a></td><td class="rcOutOfRange"><span>22</span></td><td class="rcOutOfRange"><span>23</span></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_5" scope="row">35</th><td class="rcOutOfRange"><span>24</span></td><td class="rcOutOfRange"><span>25</span></td><td class="rcOutOfRange"><span>26</span></td><td class="rcOutOfRange"><span>27</span></td><td class="rcOutOfRange"><span>28</span></td><td class="rcOutOfRange"><span>29</span></td><td class="rcOutOfRange"><span>30</span></td>
+		</tr><tr class="rcRow">
+			<th id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top_rs_6" scope="row">36</th><td class="rcOutOfRange"><span>31</span></td><td class="rcOutOfRange"><span>1</span></td><td class="rcOutOfRange"><span>2</span></td><td class="rcOutOfRange"><span>3</span></td><td class="rcOutOfRange"><span>4</span></td><td class="rcOutOfRange"><span>5</span></td><td class="rcOutOfRange"><span>6</span></td>
+		</tr>
+	</tbody>
+</table></td>
+	</tr>
+</tbody>
+							</table><input type="hidden" name="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_SD" id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_SD" value="[]"><input type="hidden" name="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_AD" id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_AD" value="[[2017,7,24],[2025,8,21],[2025,8,21]]">
+						</div></td>
+					</tr>
+				</tbody>
+			</table><input id="ctl00_ctl00_MainContent_MainContent_ToDatePicker_ClientState" name="ctl00_ctl00_MainContent_MainContent_ToDatePicker_ClientState" type="hidden" value="{&quot;minDateStr&quot;:&quot;2017-07-24-00-00-00&quot;,&quot;maxDateStr&quot;:&quot;2025-08-21-00-00-00&quot;}" autocomplete="off">
+		</div>
+                    </div>
+                </div>
+                <div class="filter-set clearfix large">
+                    <div class="filter">
+                        <label for="MainContent_MainContent_SecurityTypesList" class="medium">Security Type:</label>
+                        <select name="ctl00$ctl00$MainContent$MainContent$SecurityTypesList" id="MainContent_MainContent_SecurityTypesList" class="SecurityTypesList" onchange="SecurityTypesListChange()" style="width:110px;">
+			<option selected="selected" value="all">All</option>
+			<option value="Conventional">Conventional</option>
+			<option value="Index-linked">Index-linked</option>
+			<option value="Strips">Strips</option>
+			<option value="Bills">Bills</option>
+
+		</select>
+                    </div>
+                    <div class="filter">
+                        <label for="MainContent_MainContent_SymbolTextBox" class="small-x">ISIN:</label>
+                        <input name="ctl00$ctl00$MainContent$MainContent$SymbolTextBox" type="text" id="MainContent_MainContent_SymbolTextBox" class="SymbolTextBox" onblur="SymbolTextBoxBlur()" style="width:110px;">
+                    </div>
+                </div>
+                <div class="filter-set clearfix ">
+                    <div class="filter">
+                        <span title="Choose a Type">Type:</span>
+                        <select name="ctl00$ctl00$MainContent$MainContent$CPTypeList" id="MainContent_MainContent_CPTypeList" class="CPTypeList" onchange="CPTypeListChange()" style="width:110px;">
+			<option selected="selected" value="all">All</option>
+			<option value="gilts">Gilts only</option>
+			<option value="iosco">EuroGov only</option>
+
+		</select>
+                    </div>  
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <strong>Note: Exporting securities is limited to the last 5 working days (Exporting data for a single security is unlimited). If you require data for a longer period please use our <a href="https://www.tradeweb.com/who-we-are/contact-us/?fn=Giuseppe&amp;ln=Pes&amp;em=giuse88%40gmail.com&amp;pn=07578073300&amp;co=None&amp;ct=United+Kingdom&amp;chk=Market+Data" target="_blank">request more information</a> enquiry page.</strong>
+
+                <input type="button" name="ctl00$ctl00$MainContent$MainContent$ExportButton" value="Export" onclick="ExportButton_ClientClick(); return false;__doPostBack('ctl00$ctl00$MainContent$MainContent$ExportButton','')" id="MainContent_MainContent_ExportButton" class="btn red">
+                <input type="button" name="ctl00$ctl00$MainContent$MainContent$SubmitButton" value="Submit" onclick="SubmitButton_ClientClick();__doPostBack('ctl00$ctl00$MainContent$MainContent$SubmitButton','')" id="MainContent_MainContent_SubmitButton" class="btn blue">
+            </div>
+        </div>
+    
+	</div>
+</div>
+
+	<div class="panel-grid">
+		<div class="RadAjaxPanel" id="ctl00_ctl00_MainContent_MainContent_ctl00_ctl00_MainContent_MainContent_WarningPanelPanel" style="display: block;">
+	<div id="MainContent_MainContent_WarningPanel" class="panel-grey price_info">
+		
+			<img src="/images/icon-info.png" alt="Close price information" height="16px" width="16px">
+			<strong>Closing prices for today will become available after 12:00 on Monday (UK local time). For historic prices, use the filters to select a date range.</strong>
+		
+	</div>
+</div>
+        <div class="RadAjaxPanel" id="ctl00_ctl00_MainContent_MainContent_ctl00_ctl00_MainContent_MainContent_HolidayWarningPanelPanel" style="display: block;">
+
+</div>
+		<div class="RadAjaxPanel" id="ctl00_ctl00_MainContent_MainContent_ctl00_ctl00_MainContent_MainContent_ClosePricesGridPanel" style="display: block;">
+	<div id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid" class="RadGrid RadGrid_Default" tabindex="0">
+
+	<table class="rgMasterTable" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00" style="width:100%;table-layout:auto;empty-cells:show;">
+		<colgroup>
+		<col style="width:20px">
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+		<col>
+	</colgroup>
+<thead>
+			<tr>
+				<th scope="col" class="rgHeader rgGroupCol">&nbsp;</th><th scope="col" class="rgHeader">Gilt Name</th><th scope="col" class="rgHeader">Close of Business Date</th><th scope="col" class="rgHeader">ISIN</th><th scope="col" class="rgHeader">Type</th><th scope="col" class="rgHeader">Coupon</th><th scope="col" class="rgHeader">Maturity</th><th scope="col" class="rgHeader">Clean Price</th><th scope="col" class="rgHeader">Dirty Price</th><th scope="col" class="rgHeader">Yield</th><th scope="col" class="rgHeader">Mod Duration</th><th scope="col" class="rgHeader">Accrued Interest</th>
+			</tr>
+		</thead><tfoot>
+			<tr class="rgPager">
+				<td colspan="12"><table summary="Data pager which controls on which page is the RadGrid control." style="width:100%;border-spacing:0;">
+					<caption>
+						<span style="display: none">Data pager</span>
+					</caption><thead>
+						<tr>
+							<th scope="col">Data pager</th>
+						</tr>
+					</thead><tbody>
+						<tr>
+							<td class="rgPagerCell NextPrevAndNumeric"><div class="rgWrap rgArrPart1">
+								<input type="button" name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl02" value=" " onclick="return false;__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl02','')" title="First Page" class="rgPageFirst"><input type="button" name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl03" value=" " onclick="return false;__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl03','')" title="Previous Page" class="rgPagePrev">
+							</div><div class="rgWrap rgNumPart">
+								<a onclick="return false;" class="rgCurrentPage" href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl05','')"><span>1</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl07','')"><span>2</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl09','')"><span>3</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl11','')"><span>4</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl13','')"><span>5</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl15','')"><span>6</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl17','')"><span>7</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl19','')"><span>8</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl21','')"><span>9</span></a><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl23','')"><span>10</span></a><a title="Next Pages" href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl25','')"><span>...</span></a>
+							</div><div class="rgWrap rgArrPart2">
+								<input type="button" name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl28" value=" " onclick="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl28','')" title="Next Page" class="rgPageNext"><input type="button" name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl29" value=" " onclick="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$ctl29','')" title="Last Page" class="rgPageLast">
+							</div><div class="rgWrap rgAdvPart">
+								<span id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_ChangePageSizeLabel" class="rgPagerLabel">Page size:</span><div id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox" class="RadComboBox RadComboBox_Default" style="width:46px;white-space:normal;">
+									<table summary="Page Size Drop Down Control" style="border-width:0;border-collapse:collapse;width:100%">
+										<caption style="display: none;">
+											PageSizeComboBox
+										</caption><tbody><tr class="rcbReadOnly">
+											<td class="rcbInputCell rcbInputCellLeft" style="width:100%;"><input name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$PageSizeComboBox" type="text" class="rcbInput radPreventDecorate" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_Input" value="30" readonly="readonly" autocomplete="off"></td><td class="rcbArrowCell rcbArrowCellRight"><a id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_Arrow" style="overflow: hidden;display: block;position: relative;outline: none;">select</a></td>
+										</tr>
+									</tbody></table><div class="rcbSlide" style="z-index:6000;display:none;"><div id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_DropDown" class="RadComboBoxDropDown RadComboBoxDropDown_Default "><div class="rcbScroll rcbWidth"><ul class="rcbList"><li class="rcbItem">10</li><li class="rcbItem">20</li><li class="rcbItem">30</li><li class="rcbItem">50</li></ul></div></div></div><input id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_ClientState" name="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_ClientState" type="hidden" autocomplete="off">
+								</div>
+							</div><div class="rgWrap rgInfoPart">
+								 &nbsp;<strong>931</strong> items in <strong>32</strong> pages
+							</div></td>
+						</tr>
+					</tbody>
+				</table></td>
+			</tr>
+		</tfoot><tbody>
+		<tr class="rgGroupHeader">
+			<td class="rgGroupCol"><input type="button" name="ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl04$ctl00" value=" " onclick="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl04$ctl00','')" title="Collapse group" class="rgCollapse" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__2__0"></td><td colspan="11"><p>Type: Bills (Showing 30 of 32 items. Group continues on the next page.)</p></td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__0">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  08/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl05$ctl00','')">GB00BSGLT945</a></td><td>Bills</td><td>N/A</td><td>8/26/2025</td><td>99.955597</td><td>N/A</td><td>4.053529</td><td>0.010954</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__1">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  09/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl07$ctl00','')">GB00BSGLWG21</a></td><td>Bills</td><td>N/A</td><td>9/1/2025</td><td>99.889437</td><td>N/A</td><td>4.040000</td><td>0.027367</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__2">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  09/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl09$ctl00','')">GB00BSGLY440</a></td><td>Bills</td><td>N/A</td><td>9/8/2025</td><td>99.810985</td><td>N/A</td><td>4.065938</td><td>0.046487</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__3">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  09/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl11$ctl00','')">GB00BSGM0F04</a></td><td>Bills</td><td>N/A</td><td>9/15/2025</td><td>99.733644</td><td>N/A</td><td>4.061645</td><td>0.065578</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__4">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  09/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl13$ctl00','')">GB00BSGM3400</a></td><td>Bills</td><td>N/A</td><td>9/22/2025</td><td>99.656363</td><td>N/A</td><td>4.060000</td><td>0.084640</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__5">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  09/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl15$ctl00','')">GB00BSGM4P81</a></td><td>Bills</td><td>N/A</td><td>9/29/2025</td><td>99.577752</td><td>N/A</td><td>4.073000</td><td>0.103670</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__6">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  10/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl17$ctl00','')">GB00BSGM6411</a></td><td>Bills</td><td>N/A</td><td>10/6/2025</td><td>99.500982</td><td>N/A</td><td>4.067886</td><td>0.122672</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__7">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  10/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl19$ctl00','')">GB00BSGM8K17</a></td><td>Bills</td><td>N/A</td><td>10/13/2025</td><td>99.424272</td><td>N/A</td><td>4.064568</td><td>0.141646</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__8">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  10/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl21$ctl00','')">GB00BSGMC097</a></td><td>Bills</td><td>N/A</td><td>10/20/2025</td><td>99.347621</td><td>N/A</td><td>4.062408</td><td>0.160589</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__9">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  10/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl23$ctl00','')">GB00BSGMF991</a></td><td>Bills</td><td>N/A</td><td>10/27/2025</td><td>99.270165</td><td>N/A</td><td>4.065884</td><td>0.179502</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__10">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  11/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl25$ctl00','')">GB00BSGMHL55</a></td><td>Bills</td><td>N/A</td><td>11/3/2025</td><td>99.192769</td><td>N/A</td><td>4.069000</td><td>0.198386</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__11">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  11/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl27$ctl00','')">GB00BSGML684</a></td><td>Bills</td><td>N/A</td><td>11/10/2025</td><td>99.116069</td><td>N/A</td><td>4.068902</td><td>0.217241</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__12">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  11/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl29$ctl00','')">GB00BSGMNZ10</a></td><td>Bills</td><td>N/A</td><td>11/17/2025</td><td>99.039428</td><td>N/A</td><td>4.069074</td><td>0.236067</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__13">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  11/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl31$ctl00','')">GB00BSGMSP66</a></td><td>Bills</td><td>N/A</td><td>11/24/2025</td><td>98.962846</td><td>N/A</td><td>4.069454</td><td>0.254863</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__14">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  12/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl33$ctl00','')">GB00BSGMVK25</a></td><td>Bills</td><td>N/A</td><td>12/1/2025</td><td>98.886323</td><td>N/A</td><td>4.070000</td><td>0.273631</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__15">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  12/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl35$ctl00','')">GB00BSGMXH36</a></td><td>Bills</td><td>N/A</td><td>12/8/2025</td><td>98.808517</td><td>N/A</td><td>4.075328</td><td>0.292365</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__16">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  12/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl37$ctl00','')">GB00BSGMZM29</a></td><td>Bills</td><td>N/A</td><td>12/15/2025</td><td>98.730772</td><td>N/A</td><td>4.080207</td><td>0.311070</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__17">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  12/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl39$ctl00','')">GB00BSGN2138</a></td><td>Bills</td><td>N/A</td><td>12/22/2025</td><td>98.653088</td><td>N/A</td><td>4.084714</td><td>0.329745</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__18">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  12/25</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl41$ctl00','')">GB00BSGN3G57</a></td><td>Bills</td><td>N/A</td><td>12/29/2025</td><td>98.581768</td><td>N/A</td><td>4.070557</td><td>0.348412</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__19">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  01/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl43$ctl00','')">GB00BSGLCY07</a></td><td>Bills</td><td>N/A</td><td>1/5/2026</td><td>98.510500</td><td>N/A</td><td>4.058000</td><td>0.367053</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__20">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  01/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl45$ctl00','')">GB00BSGN6G62</a></td><td>Bills</td><td>N/A</td><td>1/12/2026</td><td>98.434654</td><td>N/A</td><td>4.059000</td><td>0.385648</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__21">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  01/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl47$ctl00','')">GB00BSGN9455</a></td><td>Bills</td><td>N/A</td><td>1/19/2026</td><td>98.358011</td><td>N/A</td><td>4.062207</td><td>0.404211</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__22">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  01/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl49$ctl00','')">GB00BSGLWL73</a></td><td>Bills</td><td>N/A</td><td>1/26/2026</td><td>98.281428</td><td>N/A</td><td>4.065271</td><td>0.422745</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__23">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  02/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl51$ctl00','')">GB00BSGNDQ53</a></td><td>Bills</td><td>N/A</td><td>2/2/2026</td><td>98.204904</td><td>N/A</td><td>4.068211</td><td>0.441249</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__24">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  02/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl53$ctl00','')">GB00BSGNGR75</a></td><td>Bills</td><td>N/A</td><td>2/9/2026</td><td>98.130264</td><td>N/A</td><td>4.067000</td><td>0.459734</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__25">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  02/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl55$ctl00','')">GB00BSGNJZ64</a></td><td>Bills</td><td>N/A</td><td>2/16/2026</td><td>98.055213</td><td>N/A</td><td>4.067000</td><td>0.478187</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__26">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  02/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl57$ctl00','')">GB00BSGLXK32</a></td><td>Bills</td><td>N/A</td><td>2/23/2026</td><td>97.980278</td><td>N/A</td><td>4.067000</td><td>0.496612</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__27">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  03/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl59$ctl00','')">GB00BSGM1W44</a></td><td>Bills</td><td>N/A</td><td>3/9/2026</td><td>97.830749</td><td>N/A</td><td>4.067000</td><td>0.533379</td><td>N/A</td>
+		</tr><tr class="rgRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__28">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  03/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl61$ctl00','')">GB00BSGM5X31</a></td><td>Bills</td><td>N/A</td><td>3/23/2026</td><td>97.681677</td><td>N/A</td><td>4.067000</td><td>0.570033</td><td>N/A</td>
+		</tr><tr class="rgAltRow" id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00__29">
+			<td class="rgGroupCol">&nbsp;</td><td>UKTB  04/26</td><td>8/21/2025</td><td><a href="javascript:__doPostBack('ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl63$ctl00','')">GB00BSGMJ191</a></td><td>Bills</td><td>N/A</td><td>4/27/2026</td><td>97.310975</td><td>N/A</td><td>4.067000</td><td>0.661181</td><td>N/A</td>
+		</tr>
+		</tbody>
+
+	</table><div id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_SharedCalendarContainer" style="display:none;">
+
+	</div><input id="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ClientState" name="ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ClientState" type="hidden" autocomplete="off">	</div>
+
+</div>
+
+        
+            <p>The references prices listed above are calculated by Tradeweb Europe Limited and its affiliates (“Tradeweb”) and administered by FTSE International Limited in accordance with the Benchmarks Regulation and the IOSCO Principles for Financial Benchmarks. Neither Tradeweb nor any third party connected to the provision or administration of such data warrants or guarantees the timeliness, accuracy or completeness of the data, and the data is provided “as is” without any warranties either express or implied. In no event shall Tradeweb, or any third party connected to the provision or administration of such data, be liable to any recipient of the data or any other person (regardless of the cause of action) for the accuracy of the data or for any delays, inaccuracies, errors, interruptions or omissions in the furnishing of the data.</p>
+        
+
+        
+	</div>
+
+         <div id="MainContent_pnlAlert" style="display: block;">
+	
+                    
+                
+</div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+               
+
+				<div id="footer" class="clearfix">
+					<div id="footer-left">
+						<ul>
+							<li><a href="/terms/" target="_blank">Terms of Use</a> | </li>
+							<li><a href="http://www.tradeweb.com/Contact-Us/Locations/" target="_blank">Contact Us</a> | </li>
+							<li><a href="http://www.tradeweb.com/About-Us/Overview/" target="_blank">About Us</a> | </li>
+						</ul>
+					</div>
+					<div id="footer-right"></div>
+				</div>
+				<div id="copyright">
+               
+					<p>©2025 Tradeweb Markets LLC. All rights reserved. Redistribution is prohibited without the written consent of Tradeweb Markets LLC.
+                        Tradeweb Markets LLC compiles information from sources it believes to be reliable, but does not warrant its accuracy, and disclaims all liability arising from its use.</p>
+              	       
+				</div>
+                	
+		</div>
+
+
+		<!-- fixed at top -->
+		<div id="top-bar">
+			<div id="top-bar-container">
+				<div id="topnav">
+					<div tabindex="0" id="ctl00_ctl00_rmTopNav" class="RadMenu RadMenu_Default rmSized" style="height: 27px; z-index: 7000;">
+	<ul class="rmRootGroup rmHorizontal">
+		<li class="rmItem rmFirst"><a class="rmLink rmRootLink icon-link home" href="/"><span class="rmText">Home</span></a></li><li class="rmItem "><a class="rmLink rmRootLink icon-link contact" target="_blank" href="http://www.tradeweb.com/contact-us/locations/"><span class="rmText">Contact</span></a></li><li class="rmItem rmLast"><a class="rmLink rmRootLink icon-link help" href="#"><span class="rmText rmExpandDown">Help</span></a><div class="rmSlide">
+			<ul class="rmVertical rmGroup rmLevel1">
+				<li class="rmItem rmFirst rmLast"><a class="rmLink" target="_blank" href="/help/"><span class="rmText">SDR Reporting</span></a></li>
+			</ul>
+		</div></li>
+	</ul><input id="ctl00_ctl00_rmTopNav_ClientState" name="ctl00_ctl00_rmTopNav_ClientState" type="hidden" autocomplete="off">
+</div>
+                      <div tabindex="0" id="ctl00_ctl00_favoritesMenu" class="RadMenu RadMenu_Default rmSized" style="height: 27px; z-index: 7000;">
+	<ul class="rmRootGroup rmHorizontal">
+		<li class="rmItem rmFirst rmLast"><a class="rmLink rmRootLink" href="#"><span class="rmText">Favorites</span></a></li>
+	</ul><input id="ctl00_ctl00_favoritesMenu_ClientState" name="ctl00_ctl00_favoritesMenu_ClientState" type="hidden" autocomplete="off">
+</div>
+                <div tabindex="0" id="ctl00_ctl00_savedSearchMenu" class="RadMenu RadMenu_Default rmSized" style="height: 27px; z-index: 7000;">
+	<ul class="rmRootGroup rmHorizontal">
+		<li class="rmItem rmFirst rmLast"><a class="rmLink rmRootLink" href="#"><span class="rmText">Saved Items</span></a></li>
+	</ul><input id="ctl00_ctl00_savedSearchMenu_ClientState" name="ctl00_ctl00_savedSearchMenu_ClientState" type="hidden" autocomplete="off">
+</div>
+				</div>
+				<div id="userinfo">
+					<!-- user login details -->
+					
+							<span id="HeadLoginView_ShadowSwitch"><span>
+									<div id="welcome"><strong>Welcome: </strong>Giuseppe</div>                                    
+								</span></span>
+							<div id="logout"><a id="HeadLoginView_HeadLoginStatus" class="white icon-link lock" href="javascript:__doPostBack('ctl00$ctl00$HeadLoginView$HeadLoginStatus$ctl00','')">Sign Out</a></div>
+						
+                    &nbsp;&nbsp;
+                <a id="lnkFav" class="white icon-link add" href="javascript:__doPostBack('ctl00$ctl00$lnkFav','')">Bookmark</a>
+				</div>
+			</div>
+		</div>
+
+	
+
+<script type="text/javascript">
+//<![CDATA[
+window.__TsmHiddenField = $get('RadScriptManager1_TSM');;(function() {
+                        function loadHandler() {
+                            var hf = $get('RadStylesheetManager1_TSSM');
+                            if (!hf._RSSM_init) { hf._RSSM_init = true; hf.value = ''; }
+                            hf.value += ';|638906633100000000:a74f6ffd:5f425349:d2842be;Telerik.Web.UI, Version=2020.2.617.40, Culture=neutral, PublicKeyToken=121fae78165ba3d4:en:052f2b1c-05b8-458e-9272-a1efb1307104:5951aeec:2b415891:ed2942d4:c5d7b491:92753c09:91f742eb:45085116:27c5704c:aac1aeb7:c73cf106:c86a4a06:4c651af2:9e1572d6:e25b4b77:1c2121e:e24b8e95';
+                            Sys.Application.remove_load(loadHandler);
+                        };
+                        Sys.Application.add_load(loadHandler);
+                    })();Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_flow":0,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_i0_ctl00_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","expandDelay":600,"itemData":[{"groupSettings":{"repeatColumns":1},"items":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/etp/trade-views/yswp/"}],"navigateUrl":"https://reports.tradeweb.com/etp/trade-views/"}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar_i0_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_flow":0,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_i1_ctl00_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","expandDelay":600,"itemData":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports-pri.tradeweb.com/product-pages/repo/","outerCssClass":"empty"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports-pri.tradeweb.com/product-pages/tca/","outerCssClass":"empty"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports-pri.tradeweb.com/product-pages/aiex/","outerCssClass":"empty"}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar_i1_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_flow":0,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_i2_ctl00_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","expandDelay":600,"itemData":[{"groupSettings":{"repeatColumns":1},"items":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/download-asset/3/"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/download-asset/4/"}],"navigateUrl":"https://reports.tradeweb.com/sef/downloads/"},{"groupSettings":{"repeatColumns":1},"items":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/download-asset/1/"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/download-asset/2/"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/download-asset/134002/"}],"navigateUrl":"https://reports.tradeweb.com/sef/downloads/"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/sef/sb-downloads/","outerCssClass":"empty"}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar_i2_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_flow":0,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_i3_ctl00_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","expandDelay":600,"itemData":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/closing-prices/gilts/","outerCssClass":"empty"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/closing-prices/tradeweb-term-rfr/","outerCssClass":"empty"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/closing-prices/cmt-rates/","outerCssClass":"empty"},{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/closing-prices/muni-curve/","outerCssClass":"empty"}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar_i3_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_flow":0,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_i4_ctl00_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","expandDelay":600,"itemData":[{"groupSettings":{"repeatColumns":1},"navigateUrl":"https://reports.tradeweb.com/twa/rate-sheets/","outerCssClass":"empty"}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar_i4_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadPanelBar, {"_skin":"Default","clientStateFieldID":"ctl00_ctl00_MainContent_RadPanelBar_ClientState","collapseAnimation":"{\"duration\":800}","expandAnimation":"{\"duration\":800}","expandMode":1,"itemData":[{"text":"ETP Reporting","navigateUrl":"https://reports.tradeweb.com/etp/","templated":true,"hasContentTemplate":true},{"text":"Product Pages","navigateUrl":"https://reports-pri.tradeweb.com/#","templated":true,"hasContentTemplate":true},{"text":"SEF Activity","navigateUrl":"https://reports.tradeweb.com/sef/","templated":true,"hasContentTemplate":true},{"text":"Closing Prices","expanded":true,"navigateUrl":"https://reports.tradeweb.com/closing-prices/","templated":true,"hasContentTemplate":true},{"text":"Market Statistics","navigateUrl":"https://reports-pri.tradeweb.com/market-stats/#","templated":true,"hasContentTemplate":true}]}, null, null, $get("ctl00_ctl00_MainContent_RadPanelBar"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadAjaxManager, {"_updatePanels":"","ajaxSettings":[{InitControlID : "MainContent_MainContent_SubmitButton",UpdatedControls : [{ControlID:"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_WarningPanel",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_HolidayWarningPanel",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_FilterPanel",PanelID:"MainContent_MainContent_LoadingPanel"}]},{InitControlID : "MainContent_MainContent_ExportButton",UpdatedControls : []},{InitControlID : "ctl00_ctl00_MainContent_MainContent_ClosePricesGrid",UpdatedControls : [{ControlID:"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_WarningPanel",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_HolidayWarningPanel",PanelID:"MainContent_MainContent_LoadingPanel"},{ControlID:"MainContent_MainContent_FilterPanel",PanelID:"MainContent_MainContent_LoadingPanel"}]}],"clientEvents":{OnRequestStart:"requestStart",OnResponseEnd:""},"defaultLoadingPanelID":"MainContent_MainContent_LoadingPanel","enableAJAX":true,"enableHistory":false,"links":[],"styles":[],"uniqueID":"ctl00$ctl00$MainContent$MainContent$RadAjaxManager","updatePanelsRenderMode":0}, null, null, $get("ctl00_ctl00_MainContent_MainContent_RadAjaxManager"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadWindowManager, {"clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ctl00_ClientState","formID":"ctl05","iconUrl":"","minimizeIconUrl":"","name":"ctl00","skin":"Default","windowControls":"[]"}, null, null, $get("ctl00_ctl00_MainContent_MainContent_ctl00"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadAjaxLoadingPanel, {"initialDelayTime":0,"isSticky":false,"minDisplayTime":0,"skin":"Default","uniqueID":"ctl00$ctl00$MainContent$MainContent$LoadingPanel","zIndex":90000}, null, null, $get("MainContent_MainContent_LoadingPanel"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDateInput, {"_displayText":"8/21/2025","_focused":false,"_initialValueAsText":"2025-08-21-00-00-00","_postBackEventReferenceScript":"__doPostBack(\u0027ctl00$ctl00$MainContent$MainContent$FromDatePicker\u0027,\u0027\u0027)","_skin":"Default","_validationText":"2025-08-21-00-00-00","clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput_ClientState","dateFormat":"M/d/yyyy","dateFormatInfo":{"DayNames":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"MonthNames":["January","February","March","April","May","June","July","August","September","October","November","December",""],"AbbreviatedDayNames":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"AbbreviatedMonthNames":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"AMDesignator":"AM","PMDesignator":"PM","DateSeparator":"/","TimeSeparator":":","FirstDayOfWeek":0,"DateSlots":{"Day":1,"Year":2,"Month":0},"ShortYearCenturyEnd":2029,"TimeInputOnly":false,"MonthYearOnly":false},"displayDateFormat":"M/d/yyyy","enabled":true,"incrementSettings":{InterceptArrowKeys:true,InterceptMouseWheel:true,Step:1},"maxDate":"2025-08-21-00-00-00","minDate":"2017-07-24-00-00-00","styles":{HoveredStyle: ["width:100%;", "riTextBox riHover"],InvalidStyle: ["width:100%;", "riTextBox riError"],DisabledStyle: ["width:100%;", "riTextBox riDisabled"],FocusedStyle: ["width:100%;", "riTextBox riFocused"],EmptyMessageStyle: ["width:100%;", "riTextBox riEmpty"],ReadOnlyStyle: ["width:100%;", "riTextBox riRead"],EnabledStyle: ["width:100%;", "riTextBox riEnabled"]}}, null, null, $get("ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadCalendar, {"_DayRenderChangedDays":{},"_FormatInfoArray":[["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],["January","February","March","April","May","June","July","August","September","October","November","December",""],["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"dddd, MMMM d, yyyy h:mm:ss tt","dddd, MMMM d, yyyy","h:mm:ss tt","MMMM d","ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","M/d/yyyy","h:mm tt","yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","MMMM yyyy","AM","PM","/",":",0],"_ViewRepeatableDays":{},"_ViewsHash":{"ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_Top" : [[2025,8,1], 1]},"_calendarWeekRule":0,"_culture":"en","_enableKeyboardNavigation":false,"_enableViewSelector":false,"_firstDayOfWeek":7,"_postBackCall":"__doPostBack(\u0027ctl00$ctl00$MainContent$MainContent$FromDatePicker$calendar\u0027,\u0027@@\u0027)","_rangeSelectionMode":0,"clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar_ClientState","enableMultiSelect":false,"enabled":true,"monthYearNavigationSettings":["Today","OK","Cancel","Date is out of range.","False","True","300","1","300","1","False"],"skin":"Default","specialDaysArray":[],"stylesHash":{"DayStyle": ["", ""],"CalendarTableStyle": ["", "rcMainTable"],"OtherMonthDayStyle": ["", "rcOtherMonth"],"TitleStyle": ["", ""],"SelectedDayStyle": ["", "rcSelected"],"SelectorStyle": ["", ""],"DisabledDayStyle": ["", "rcDisabled"],"OutOfRangeDayStyle": ["", "rcOutOfRange"],"WeekendDayStyle": ["", "rcWeekend"],"DayOverStyle": ["", "rcHover"],"FastNavigationStyle": ["", "RadCalendarMonthView RadCalendarMonthView_Default"],"ViewSelectorStyle": ["", "rcViewSel"]},"useColumnHeadersAsSelectors":false,"useRowHeadersAsSelectors":false}, null, null, $get("ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDatePicker, {"_PopupButtonSettings":{ ResolvedImageUrl : "", ResolvedHoverImageUrl : ""},"_animationSettings":{ShowAnimationDuration:300,ShowAnimationType:1,HideAnimationDuration:300,HideAnimationType:1},"_enableKeyboardNavigation":false,"_popupControlID":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_popupButton","clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_ClientState","focusedDate":"2025-08-21-00-00-00","maxDate":"2025-08-21-00-00-00","minDate":"2017-07-24-00-00-00"}, null, {"calendar":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_calendar","dateInput":"ctl00_ctl00_MainContent_MainContent_FromDatePicker_dateInput"}, $get("ctl00_ctl00_MainContent_MainContent_FromDatePicker"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDateInput, {"_displayText":"8/21/2025","_focused":false,"_initialValueAsText":"2025-08-21-00-00-00","_postBackEventReferenceScript":"__doPostBack(\u0027ctl00$ctl00$MainContent$MainContent$ToDatePicker\u0027,\u0027\u0027)","_skin":"Default","_validationText":"2025-08-21-00-00-00","clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput_ClientState","dateFormat":"M/d/yyyy","dateFormatInfo":{"DayNames":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"MonthNames":["January","February","March","April","May","June","July","August","September","October","November","December",""],"AbbreviatedDayNames":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"AbbreviatedMonthNames":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"AMDesignator":"AM","PMDesignator":"PM","DateSeparator":"/","TimeSeparator":":","FirstDayOfWeek":0,"DateSlots":{"Day":1,"Year":2,"Month":0},"ShortYearCenturyEnd":2029,"TimeInputOnly":false,"MonthYearOnly":false},"displayDateFormat":"M/d/yyyy","enabled":true,"incrementSettings":{InterceptArrowKeys:true,InterceptMouseWheel:true,Step:1},"maxDate":"2025-08-21-00-00-00","minDate":"2017-07-24-00-00-00","styles":{HoveredStyle: ["width:100%;", "riTextBox riHover"],InvalidStyle: ["width:100%;", "riTextBox riError"],DisabledStyle: ["width:100%;", "riTextBox riDisabled"],FocusedStyle: ["width:100%;", "riTextBox riFocused"],EmptyMessageStyle: ["width:100%;", "riTextBox riEmpty"],ReadOnlyStyle: ["width:100%;", "riTextBox riRead"],EnabledStyle: ["width:100%;", "riTextBox riEnabled"]}}, null, null, $get("ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadCalendar, {"_DayRenderChangedDays":{},"_FormatInfoArray":[["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],["January","February","March","April","May","June","July","August","September","October","November","December",""],["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"dddd, MMMM d, yyyy h:mm:ss tt","dddd, MMMM d, yyyy","h:mm:ss tt","MMMM d","ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","M/d/yyyy","h:mm tt","yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","MMMM yyyy","AM","PM","/",":",0],"_ViewRepeatableDays":{},"_ViewsHash":{"ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_Top" : [[2025,8,1], 1]},"_calendarWeekRule":0,"_culture":"en","_enableKeyboardNavigation":false,"_enableViewSelector":false,"_firstDayOfWeek":7,"_postBackCall":"__doPostBack(\u0027ctl00$ctl00$MainContent$MainContent$ToDatePicker$calendar\u0027,\u0027@@\u0027)","_rangeSelectionMode":0,"clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar_ClientState","enableMultiSelect":false,"enabled":true,"monthYearNavigationSettings":["Today","OK","Cancel","Date is out of range.","False","True","300","1","300","1","False"],"skin":"Default","specialDaysArray":[],"stylesHash":{"DayStyle": ["", ""],"CalendarTableStyle": ["", "rcMainTable"],"OtherMonthDayStyle": ["", "rcOtherMonth"],"TitleStyle": ["", ""],"SelectedDayStyle": ["", "rcSelected"],"SelectorStyle": ["", ""],"DisabledDayStyle": ["", "rcDisabled"],"OutOfRangeDayStyle": ["", "rcOutOfRange"],"WeekendDayStyle": ["", "rcWeekend"],"DayOverStyle": ["", "rcHover"],"FastNavigationStyle": ["", "RadCalendarMonthView RadCalendarMonthView_Default"],"ViewSelectorStyle": ["", "rcViewSel"]},"useColumnHeadersAsSelectors":false,"useRowHeadersAsSelectors":false}, null, null, $get("ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDatePicker, {"_PopupButtonSettings":{ ResolvedImageUrl : "", ResolvedHoverImageUrl : ""},"_animationSettings":{ShowAnimationDuration:300,ShowAnimationType:1,HideAnimationDuration:300,HideAnimationType:1},"_enableKeyboardNavigation":false,"_popupControlID":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_popupButton","clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_ClientState","focusedDate":"2025-08-21-00-00-00","maxDate":"2025-08-21-00-00-00","minDate":"2017-07-24-00-00-00"}, null, {"calendar":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_calendar","dateInput":"ctl00_ctl00_MainContent_MainContent_ToDatePicker_dateInput"}, $get("ctl00_ctl00_MainContent_MainContent_ToDatePicker"));
+});
+
+var callBackFrameUrl='/WebResource.axd?d=ZhuMZzL5PLHyoEN4nZaG5FbMp60cpefvq5PWop_DLr0jO90PceO92ZSTnivVF42hLwDvrg5IvDd7C5rbYVZYfIaaXGU1&t=637460801481343508';
+WebForm_InitCallback();Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadComboBox, {"_dropDownWidth":0,"_height":0,"_skin":"Default","_text":"30","_uniqueId":"ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00$ctl03$ctl01$PageSizeComboBox","_value":"30","clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox_ClientState","collapseAnimation":"{\"duration\":450}","expandAnimation":"{\"duration\":450}","itemData":[{"value":"10","attributes":{"ownerTableViewId":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00"}},{"value":"20","attributes":{"ownerTableViewId":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00"}},{"value":"30","selected":true,"attributes":{"ownerTableViewId":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00"}},{"value":"50","attributes":{"ownerTableViewId":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00"}}],"localization":"{\"AllItemsCheckedString\":\"All items checked\",\"ItemsCheckedString\":\"items checked\",\"CheckAllString\":\"Check All\"}","selectedIndex":2}, {"selectedIndexChanged":Telerik.Web.UI.Grid.ChangePageSizeComboHandler,"selectedIndexChanging":Telerik.Web.UI.Grid.ChangingPageSizeComboHandler}, null, $get("ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00_ctl03_ctl01_PageSizeComboBox"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadGrid, {"ClientID":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid","ClientSettings":{"AllowAutoScrollOnDragDrop":true,"ShouldCreateRows":true,"DataBinding":{},"Selecting":{"CellSelectionMode":0},"Scrolling":{},"Resizing":{},"ClientMessages":{},"KeyboardNavigationSettings":{"AllowActiveRowCycle":false,"EnableKeyboardShortcuts":true,"FocusKey":89,"InitInsertKey":73,"RebindKey":82,"ExitEditInsertModeKey":27,"UpdateInsertItemKey":13,"DeleteActiveRow":127,"ExpandDetailTableKey":39,"CollapseDetailTableKey":37,"MoveDownKey":40,"MoveUpKey":38,"SaveChangesKey":85,"CancelChangesKey":81},"Animation":{},"Virtualization":{}},"Skin":"Default","UniqueID":"ctl00$ctl00$MainContent$MainContent$ClosePricesGrid","_activeRowIndex":"","_controlToFocus":"","_currentPageIndex":0,"_defaultDateTimeFormat":"M/d/yyyy h:mm:ss tt","_editIndexes":"[]","_embeddedSkin":true,"_freezeText":"Freeze","_gridTableViewsData":"[{\"ClientID\":\"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00\",\"UniqueID\":\"ctl00$ctl00$MainContent$MainContent$ClosePricesGrid$ctl00\",\"PageSize\":30,\"PageCount\":32,\"EditMode\":\"EditForms\",\"AllowPaging\":true,\"CurrentPageIndex\":0,\"VirtualItemCount\":0,\"AllowMultiColumnSorting\":false,\"AllowNaturalSort\":true,\"AllowFilteringByColumn\":false,\"PageButtonCount\":10,\"HasDetailTables\":false,\"HasMultiHeaders\":false,\"CheckListWebServicePath\":\"\",\"GroupLevelsCount\":\"1\",\"EnableGroupsExpandAll\":false,\"GroupHeadersCount\":[1],\"DataFieldHeaderText\":{\"Description\":\"Gilt Name\",\"Timestamp\":\"Close of Business Date\",\"SecurityTypeDescription\":\"Type\",\"Coupon\":\"Coupon\",\"Maturity\":\"Maturity\",\"Clean\":\"Clean Price\",\"Dirty\":\"Dirty Price\",\"Yield\":\"Yield\",\"ModDuration\":\"Mod Duration\",\"AccruedInterest\":\"Accrued Interest\"},\"GroupLoadMode\":\"Server\",\"PagerAlwaysVisible\":false,\"IsItemInserted\":false,\"clientDataKeyNames\":[],\"hasDetailItemTemplate\":false,\"_dataBindTemplates\":false,\"_selectedItemStyle\":\"\",\"_selectedItemStyleClass\":\"rgSelectedRow\",\"_columnsData\":[{\"UniqueName\":\"column\",\"Resizable\":false,\"Reorderable\":false,\"Selectable\":false,\"Groupable\":false,\"ColumnType\":\"GridGroupSplitterColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"Display\":true},{\"UniqueName\":\"Description\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.String\",\"DataField\":\"Description\",\"Display\":true},{\"UniqueName\":\"Timestamp\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.DateTime\",\"DataField\":\"Timestamp\",\"DataFormatString\":\"{0:d}\",\"Display\":true},{\"UniqueName\":\"Symbol\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":false,\"Groupable\":false,\"ColumnType\":\"GridButtonColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"ButtonType\":\"LinkButton\",\"CommandName\":\"SymbolFilter\",\"CommandArgument\":\"\",\"Text\":\"\",\"DataTextField\":\"Symbol\",\"DataTextFormatString\":\"\",\"ImageUrl\":\"\",\"Display\":true},{\"UniqueName\":\"SecurityTypeDescription\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.String\",\"DataField\":\"SecurityTypeDescription\",\"Display\":true},{\"UniqueName\":\"Coupon\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Decimal\",\"DataField\":\"Coupon\",\"DataFormatString\":\"{0:N3}\",\"Display\":true},{\"UniqueName\":\"Maturity\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.DateTime\",\"DataField\":\"Maturity\",\"DataFormatString\":\"{0:d}\",\"Display\":true},{\"UniqueName\":\"CleanPrice\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Double\",\"DataField\":\"Clean\",\"DataFormatString\":\"{0:N3}\",\"Display\":true},{\"UniqueName\":\"DirtyPrice\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Double\",\"DataField\":\"Dirty\",\"DataFormatString\":\"{0:N6}\",\"Display\":true},{\"UniqueName\":\"Yield\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Double\",\"DataField\":\"Yield\",\"DataFormatString\":\"{0:N6}\",\"Display\":true},{\"UniqueName\":\"ModDuration\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Double\",\"DataField\":\"ModDuration\",\"DataFormatString\":\"{0:N6}\",\"Display\":true},{\"UniqueName\":\"AccruedInterest\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":true,\"DataTypeName\":\"System.Double\",\"DataField\":\"AccruedInterest\",\"DataFormatString\":\"{0:N6}\",\"Display\":true}]}]","_masterClientID":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ctl00","_shouldFocusOnPage":false,"_unfreezeText":"Unfreeze","allowMultiRowSelection":false,"clientStateFieldID":"ctl00_ctl00_MainContent_MainContent_ClosePricesGrid_ClientState","expandItems":{},"renderMode":1}, null, null, $get("ctl00_ctl00_MainContent_MainContent_ClosePricesGrid"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_rmTopNav_ClientState","collapseAnimation":"{\"duration\":450}","expandAnimation":"{\"duration\":450}","itemData":[{"navigateUrl":"/","cssClass":"icon-link home"},{"navigateUrl":"http://www.tradeweb.com/contact-us/locations/","target":"_blank","cssClass":"icon-link contact"},{"items":[{"navigateUrl":"/help/","target":"_blank"}],"cssClass":"icon-link help"}]}, null, null, $get("ctl00_ctl00_rmTopNav"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_favoritesMenu_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","itemData":[{}]}, null, null, $get("ctl00_ctl00_favoritesMenu"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadMenu, {"_childListElementCssClass":null,"_skin":"Default","clientStateFieldID":"ctl00_ctl00_savedSearchMenu_ClientState","collapseAnimation":"{\"duration\":450}","defaultGroupSettings":"{\"offsetX\":5,\"offsetY\":-1}","expandAnimation":"{\"duration\":450}","itemData":[{}]}, null, null, $get("ctl00_ctl00_savedSearchMenu"));
+});
+//]]>
+</script>
+
+
+	
+    
+
+
+	
+	
+	<script type="text/javascript">
+
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-38842764-1']);
+		_gaq.push(['_setDomainName', 'tradeweb.com']);
+		_gaq.push(['_trackPageview']);
+
+		_gaq.push(['_setCustomVar', 1, 'User', '18883563', 1]);
+		_gaq.push(['_setCustomVar', 2, 'UserType', 'Non-Tradeweb', 1]);
+		_gaq.push(['_setCustomVar', 4, 'UserCompany', 'None', 1]);
+
+		(function () {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+
+	</script>
+
+
+
+</div></form></body></html>

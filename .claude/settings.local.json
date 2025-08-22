@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(./run.sh)",
+      "Bash(grep:*)",
+      "Bash(python:*)",
+      "Bash(mkdir:*)",
+      "Bash(pip install:*)",
+      "Bash(sqlite3:*)",
+      "Bash(./run.sh:*)",
+      "Bash(cat:*)",
+      "Bash(od:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

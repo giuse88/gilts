@@ -1,0 +1,26 @@
+# Environment configuration (contains sensitive credentials)
+.env
+
+# Database files
+*.db
+*.db.backup
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+downloads/logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
